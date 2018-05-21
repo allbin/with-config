@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-let base_uri = "https://" + window.location.hostname;
+let base_uri = window.location.host;
 let config_asset_uri = '/config.json';
 
 let default_cfg = null;
