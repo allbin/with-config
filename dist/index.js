@@ -26,7 +26,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var base_uri = window.location.host;
+var base_uri = window.location.protocol + "//" + window.location.host;
 var config_asset_uri = '/config.json';
 
 var default_cfg = null;
@@ -116,7 +116,7 @@ function withConfig() {
             var _this = _possibleConstructorReturn(this, (WithConfig.__proto__ || Object.getPrototypeOf(WithConfig)).call(this));
 
             _this.state = {
-                loading: false
+                loading: true
             };
             return _this;
         }
@@ -126,16 +126,17 @@ function withConfig() {
             value: function componentDidMount() {
                 var _this2 = this;
 
-                if (fetching_status !== "fetched") {
-                    this.setState({ loading: true });
-                    listeners.push(function () {
-                        _this2.setState({ loading: false });
-                    });
-                    if (fetching_status === "not_initialized") {
-                        initiateFetch();
-                    }
-                    return;
+                if (fetching_status === "fetched") {
+                    this.setState({ loading: false });
                 }
+                this.setState({ loading: true });
+                listeners.push(function () {
+                    _this2.setState({ loading: false });
+                });
+                if (fetching_status === "not_initialized") {
+                    initiateFetch();
+                }
+                return;
             }
         }, {
             key: 'render',
