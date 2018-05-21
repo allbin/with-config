@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-let base_uri = window.location.host;
+let base_uri = window.location.protocol + "//" + window.location.host;
 let config_asset_uri = '/config.json';
 
 let default_cfg = null;
@@ -72,19 +72,20 @@ export default function withConfig(WrappedComponent = null, SpinnerComponent = n
             super();
 
             this.state = {
-                loading: false
+                loading: true
             };
         }
 
         componentDidMount() {
-            if (fetching_status !== "fetched") {
-                this.setState({ loading: true });
-                listeners.push(() => { this.setState({ loading: false }); });
-                if (fetching_status === "not_initialized") {
-                    initiateFetch();
-                }
-                return;
+            if (fetching_status === "fetched") {
+                this.setState({ loading: false });
             }
+            this.setState({ loading: true });
+            listeners.push(() => { this.setState({ loading: false }); });
+            if (fetching_status === "not_initialized") {
+                initiateFetch();
+            }
+            return;
         }
 
         render() {
