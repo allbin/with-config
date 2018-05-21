@@ -26,6 +26,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var base_uri = "https://" + window.location.hostname;
+var config_asset_uri = '/config.json';
+
 var default_cfg = null;
 var fetched_cfg = null;
 var combined_cfg = {};
@@ -37,12 +40,10 @@ var fetching_status = "not_initialized";
 var listeners = [];
 
 function initiateFetch() {
-    var url = "https://" + window.location.hostname;
-
     fetching_status = "fetching";
 
     (0, _axios2.default)({
-        url: url,
+        url: base_uri + config_asset_uri,
         method: "GET"
     }).then(function (res) {
         fetched_cfg = res.data;
