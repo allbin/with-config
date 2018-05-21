@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 
+let base_uri = "https://" + window.location.hostname;
+let config_asset_uri = '/config.json';
 
 let default_cfg = null;
 let fetched_cfg = null;
@@ -13,12 +15,10 @@ let fetching_status = "not_initialized";
 let listeners = [];
 
 function initiateFetch() {
-    let url = "https://" + window.location.hostname;
-
     fetching_status = "fetching";
 
     axios({
-        url: url,
+        url: base_uri + config_asset_uri,
         method: "GET"
     }).then((res) => {
         fetched_cfg = res.data;
