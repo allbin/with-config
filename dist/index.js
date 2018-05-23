@@ -174,7 +174,11 @@ function withConfig() {
         }, {
             key: 'componentDidMount',
             value: function componentDidMount() {
-                component_listeners.push(this.componentListener);
+                var _this2 = this;
+
+                component_listeners.push(function () {
+                    _this2.componentListener();
+                });
                 if (fetching_status === "fetched") {
                     this.setState({ loading: false });
                     return;
