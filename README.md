@@ -13,6 +13,8 @@ A spinner is optionally shown while the config is being fetched.
 
 
 # Quick guide
+Add `"with-config": "git+https://bitbucket.org/allbin/with-config.git#v`**`x.y.z`** to package.json. Where **x.y.z** is the version tagged.
+
 Use `import withConfig from 'with-config'` in any file and wrap desired component in it to ensure dynamically loaded configs are available.
 
 ### Example MyComponent.jsx component:
@@ -49,19 +51,58 @@ export default class MyComp extends React.Component {
 
 ```
 
+### Example with default config and initial fetch
+```
+import React from 'react';
+import withConfig from 'with-config';
+import default_config from './default_config.js';
+import SomeComponent from './components/SomeComponent';
+
+withConfig().setDefault(default_config);
+withConfig().getConfig().then((config) => {
+    //Do something with config.
+    //Such as configure ErrorReporting URLs etc.
+}).catch((err) => {
+    //Fetch failed. The use will see the default error message
+    //or optional ErrorComponent.
+});
+
+let SomeComponentWithConfig = withConfig(SomeComponent);
+
+export default class MyComp extends React.Component {
+    ...
+
+    render() {
+        return (
+            <SomeComponentWithConfig>
+                <ChildComponent />
+            </SomeComponentWithConfig>
+        );
+    }
+}
+
+```
+**NOTE:** ChildComponent will only show after fetch is complete.
+
 # Wrapping function
 The HOC wrapping function attaches the `config` prop to the component being wrapped.
 
 Example: `withConfig(YourComponent)` will give access to `this.props.config` inside *YourComponent*.
 
-Optionally a second component can be supplied which will be shown while the config is being fetched: `withConfig(YourComponent, SpinnerComponent)`.
+### Optional parameters
+#### SpinnerComponent
+*withConfig(YourComponent, **`SpinnerComponent`**)*.  
+Optionally a second component can be supplied which will be shown while the config is being fetched. The spinner component, if supplied, also gets any props assigned to the wrapped component.
 
-**NOTE:** The spinner component, if supplied, also gets any props assigned to the wrapped component.
+#### ErrorComponent
+*withConfig(YourComponent, SpinnerComponent || null, **`ErrorComponent`**)*.  
+Optionally a third component can be supplied. It will be displayed when a fetch has failed due to network issues.  
+Defaults to showing the text "Oops, something went wrong." if no ErrorComponent is supplied.
 
 # Utility functions
 
-`withConfig().getConfig()` - Returns the current config values, any default values merged with any fetched values.  
-Defaults to an empty object if fetch is not complete and no defaults are entered.
+`withConfig().getConfig()` - Returns a promise that resolves to the current config values, any default values merged with any fetched values.  
+If the fetch has not been initiated it will be by this call and it will resolve once finished. Alias: `withConfig().fetch()`.
 
 `withConfig().getDefault()` - Returns default config values. If none are set returns null.
 
@@ -87,4 +128,4 @@ Use `withConfig().setDefault(<object>)` to set the default config. Returns nothi
 # Error handling
 Use `withConfig().setFetchErrorCallback(<callback function>)` to assign a callback function which is called with the Exception object if fetching from the server fails.
 
-**NOTE:** If the fetch fails the optional spinner will show forever. Or nothing will show if no spinner is supplied.
+**NOTE:** If the fetch fails the optional [ErrorComponent](#error-component) will show.
