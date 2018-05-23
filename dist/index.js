@@ -35,9 +35,11 @@ var combined_cfg = {};
 
 var fetched_cb = null;
 var fetching_error_cb = null;
+var fetching_error = null;
 
 var fetching_status = "not_initialized";
-var listeners = [];
+var get_config_listeners = [];
+var component_listeners = [];
 
 function initiateFetch() {
     fetching_status = "fetching";
@@ -52,24 +54,49 @@ function initiateFetch() {
         if (fetched_cb !== null) {
             fetched_cb(combined_cfg);
         }
-        listeners.forEach(function (listener) {
+        component_listeners.forEach(function (listener) {
             listener();
         });
     }).catch(function (err) {
+        fetching_status = "failed";
         err.network_error = true;
+        fetching_error = err;
         if (fetching_error_cb !== null) {
             fetching_error_cb(err);
             return;
         }
         console.error("withConfig: ERROR WHEN FETCHING CONFIG:");
         console.error(err);
+        component_listeners.forEach(function (listener) {
+            listener();
+        });
         throw err;
+    });
+}
+
+function _getConfig() {
+    return new Promise(function (resolve, reject) {
+        if (fetching_status === "completed") {
+            resolve(combined_cfg);
+            return;
+        }
+        if (fetching_status === "failed") {
+            reject(fetching_error);
+            return;
+        }
+        get_config_listeners.push(function () {
+            resolve(combined_cfg);
+        });
+        if (fetching_status === "not_initialized") {
+            initiateFetch();
+        }
     });
 }
 
 function withConfig() {
     var WrappedComponent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
     var SpinnerComponent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    var ErrorComponent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
     if (WrappedComponent === null) {
         return {
@@ -89,8 +116,11 @@ function withConfig() {
                 default_cfg = default_config;
                 combined_cfg = Object.assign({}, default_cfg);
             },
+            fetch: function fetch() {
+                return _getConfig();
+            },
             getConfig: function getConfig() {
-                return combined_cfg;
+                return _getConfig();
             },
             getDefault: function getDefault() {
                 return default_cfg;
@@ -116,31 +146,52 @@ function withConfig() {
             var _this = _possibleConstructorReturn(this, (WithConfig.__proto__ || Object.getPrototypeOf(WithConfig)).call(this));
 
             _this.state = {
+                error: false,
                 loading: true
             };
             return _this;
         }
 
         _createClass(WithConfig, [{
+            key: 'componentListener',
+            value: function componentListener() {
+                if (fetching_status === "failed") {
+                    this.setState({ error: true });
+                }
+                this.setState({ loading: false });
+            }
+        }, {
             key: 'componentDidMount',
             value: function componentDidMount() {
-                var _this2 = this;
-
                 if (fetching_status === "fetched") {
                     this.setState({ loading: false });
                 }
                 this.setState({ loading: true });
-                listeners.push(function () {
-                    _this2.setState({ loading: false });
-                });
+                component_listeners.push(this.componentListener);
                 if (fetching_status === "not_initialized") {
                     initiateFetch();
                 }
                 return;
             }
         }, {
+            key: 'componentWillUnmount',
+            value: function componentWillUnmount() {
+                var listener_index = component_listeners.indexOf(this.componentListener);
+                component_listeners.splice(listener_index, 1);
+            }
+        }, {
             key: 'render',
             value: function render() {
+                if (this.state.error) {
+                    if (ErrorComponent !== null) {
+                        return _react2.default.createElement(ErrorComponent, null);
+                    }
+                    return _react2.default.createElement(
+                        'p',
+                        { style: { fontAlign: "center" } },
+                        'Oops, something went wrong.'
+                    );
+                }
                 if (this.state.loading) {
                     if (SpinnerComponent !== null) {
                         return _react2.default.createElement(SpinnerComponent, this.props);
