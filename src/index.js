@@ -81,7 +81,7 @@ export default function withConfig(WrappedComponent = null, SpinnerComponent = n
                     return;
                 }
                 if (typeof default_config !== "object") {
-                    console.error("withConfig error: Arguemnt default_config is required to be an object.");
+                    console.error("withConfig error: Argument default_config is required to be an object.");
                     return;
                 }
                 if (fetching_status !== "not_initialized") {
