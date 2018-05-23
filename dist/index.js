@@ -67,6 +67,9 @@ function initiateFetch() {
         }
         console.error("withConfig: ERROR WHEN FETCHING CONFIG:");
         console.error(err);
+        get_config_listeners.forEach(function (listener) {
+            listener();
+        });
         component_listeners.forEach(function (listener) {
             listener();
         });
@@ -85,7 +88,12 @@ function _getConfig() {
             return;
         }
         get_config_listeners.push(function () {
-            resolve(combined_cfg);
+            if (fetching_status === "completed") {
+                resolve(combined_cfg);
+                return;
+            }
+            reject(fetching_error);
+            return;
         });
         if (fetching_status === "not_initialized") {
             initiateFetch();
