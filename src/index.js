@@ -77,11 +77,11 @@ export default function withConfig(WrappedComponent = null, SpinnerComponent = n
         return {
             setDefault: (default_config) => {
                 if (default_cfg !== null) {
-                    console.error("Cannot setDefault; Default config already set!");
+                    console.error("withConfig error: Cannot setDefault; Default config already set!");
                     return;
                 }
-                if (default_config instanceof Object !== false) {
-                    console.error("Arguemnt default_config is required to be an object.");
+                if (typeof default_config !== "object") {
+                    console.error("withConfig error: Arguemnt default_config is required to be an object.");
                     return;
                 }
                 if (fetching_status !== "not_initialized") {
