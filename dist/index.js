@@ -202,7 +202,7 @@ function withConfig() {
                     }
                     return _react2.default.createElement(
                         'p',
-                        { style: { fontAlign: "center" } },
+                        { style: { textAlign: "center", marginTop: "20%" } },
                         'Oops, something went wrong.'
                     );
                 }
