@@ -38,8 +38,11 @@ function initiateFetch() {
             fetching_error_cb(err);
             return;
         }
-        console.error("withConfig: ERROR WHEN FETCHING CONFIG:");
-        console.error(err);
+        if (get_config_listeners.length === 0 && fetching_error_cb === null) {
+            console.error("withConfig: ERROR WHEN FETCHING CONFIG:");
+            console.error(err);
+        }
+        get_config_listeners.forEach((listener) => { listener(); });
         component_listeners.forEach((listener) => { listener(); });
         throw err;
     });
@@ -55,7 +58,14 @@ function getConfig() {
             reject(fetching_error);
             return;
         }
-        get_config_listeners.push(() => { resolve(combined_cfg); });
+        get_config_listeners.push(() => {
+            if (fetching_status === "completed") {
+                resolve(combined_cfg);
+                return;
+            }
+            reject(fetching_error);
+            return;
+        });
         if (fetching_status === "not_initialized") {
             initiateFetch();
         }
@@ -108,15 +118,14 @@ export default function withConfig(WrappedComponent = null, SpinnerComponent = n
         }
 
         componentDidMount() {
+            component_listeners.push(() => { this.componentListener(); });
             if (fetching_status === "fetched") {
                 this.setState({ loading: false });
+                return;
             }
-            this.setState({ loading: true });
-            component_listeners.push(this.componentListener);
             if (fetching_status === "not_initialized") {
                 initiateFetch();
             }
-            return;
         }
 
         componentWillUnmount() {
@@ -129,7 +138,7 @@ export default function withConfig(WrappedComponent = null, SpinnerComponent = n
                 if (ErrorComponent !== null) {
                     return <ErrorComponent />;
                 }
-                return (<p style={{ fontAlign: "center" }}>Oops, something went wrong.</p>);
+                return (<p style={{ textAlign: "center", marginTop: "20%" }}>Oops, something went wrong.</p>);
             }
             if (this.state.loading) {
                 if (SpinnerComponent !== null) {
