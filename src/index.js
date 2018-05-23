@@ -10,9 +10,11 @@ let combined_cfg = {};
 
 let fetched_cb = null;
 let fetching_error_cb = null;
+let fetching_error = null;
 
 let fetching_status = "not_initialized";
-let listeners = [];
+let get_config_listeners = [];
+let component_listeners = [];
 
 function initiateFetch() {
     fetching_status = "fetching";
@@ -27,20 +29,40 @@ function initiateFetch() {
         if (fetched_cb !== null) {
             fetched_cb(combined_cfg);
         }
-        listeners.forEach((listener) => { listener(); });
+        component_listeners.forEach((listener) => { listener(); });
     }).catch((err) => {
+        fetching_status = "failed";
         err.network_error = true;
+        fetching_error = err;
         if (fetching_error_cb !== null) {
             fetching_error_cb(err);
             return;
         }
         console.error("withConfig: ERROR WHEN FETCHING CONFIG:");
         console.error(err);
+        component_listeners.forEach((listener) => { listener(); });
         throw err;
     });
 }
 
-export default function withConfig(WrappedComponent = null, SpinnerComponent = null) {
+function getConfig() {
+    return new Promise((resolve, reject) => {
+        if (fetching_status === "completed") {
+            resolve(combined_cfg);
+            return;
+        }
+        if (fetching_status === "failed") {
+            reject(fetching_error);
+            return;
+        }
+        get_config_listeners.push(() => { resolve(combined_cfg); });
+        if (fetching_status === "not_initialized") {
+            initiateFetch();
+        }
+    });
+}
+
+export default function withConfig(WrappedComponent = null, SpinnerComponent = null, ErrorComponent = null) {
     if (WrappedComponent === null) {
         return {
             setDefault: (default_config) => {
@@ -59,7 +81,8 @@ export default function withConfig(WrappedComponent = null, SpinnerComponent = n
                 default_cfg = default_config;
                 combined_cfg = Object.assign({}, default_cfg);
             },
-            getConfig: () => { return combined_cfg; },
+            fetch: () => { return getConfig(); },
+            getConfig: () => { return getConfig(); },
             getDefault: () => { return default_cfg; },
             getFetched: () => { return fetched_cfg; },
             setFetchedCallback: (cb) => { fetched_cb = cb; },
@@ -72,8 +95,16 @@ export default function withConfig(WrappedComponent = null, SpinnerComponent = n
             super();
 
             this.state = {
+                error: false,
                 loading: true
             };
+        }
+
+        componentListener() {
+            if (fetching_status === "failed") {
+                this.setState({ error: true });
+            }
+            this.setState({ loading: false });
         }
 
         componentDidMount() {
@@ -81,14 +112,25 @@ export default function withConfig(WrappedComponent = null, SpinnerComponent = n
                 this.setState({ loading: false });
             }
             this.setState({ loading: true });
-            listeners.push(() => { this.setState({ loading: false }); });
+            component_listeners.push(this.componentListener);
             if (fetching_status === "not_initialized") {
                 initiateFetch();
             }
             return;
         }
 
+        componentWillUnmount() {
+            let listener_index = component_listeners.indexOf(this.componentListener);
+            component_listeners.splice(listener_index, 1);
+        }
+
         render() {
+            if (this.state.error) {
+                if (ErrorComponent !== null) {
+                    return <ErrorComponent />;
+                }
+                return (<p style={{ fontAlign: "center" }}>Oops, something went wrong.</p>);
+            }
             if (this.state.loading) {
                 if (SpinnerComponent !== null) {
                     return <SpinnerComponent {...this.props} />;
