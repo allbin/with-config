@@ -174,15 +174,14 @@ function withConfig() {
         }, {
             key: 'componentDidMount',
             value: function componentDidMount() {
+                component_listeners.push(this.componentListener);
                 if (fetching_status === "fetched") {
                     this.setState({ loading: false });
+                    return;
                 }
-                this.setState({ loading: true });
-                component_listeners.push(this.componentListener);
                 if (fetching_status === "not_initialized") {
                     initiateFetch();
                 }
-                return;
             }
         }, {
             key: 'componentWillUnmount',
