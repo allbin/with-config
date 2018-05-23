@@ -65,8 +65,10 @@ function initiateFetch() {
             fetching_error_cb(err);
             return;
         }
-        console.error("withConfig: ERROR WHEN FETCHING CONFIG:");
-        console.error(err);
+        if (get_config_listeners.length === 0 && fetching_error_cb === null) {
+            console.error("withConfig: ERROR WHEN FETCHING CONFIG:");
+            console.error(err);
+        }
         get_config_listeners.forEach(function (listener) {
             listener();
         });
@@ -163,6 +165,7 @@ function withConfig() {
         _createClass(WithConfig, [{
             key: 'componentListener',
             value: function componentListener() {
+                console.log("fetching status", fetching_status);
                 if (fetching_status === "failed") {
                     this.setState({ error: true });
                 }
