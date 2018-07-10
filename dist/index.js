@@ -183,7 +183,7 @@ function withConfig() {
                 component_listeners.push(function () {
                     _this2.componentListener();
                 });
-                if (fetching_status === "fetched") {
+                if (fetching_status === "completed") {
                     this.setState({ loading: false });
                     return;
                 }
