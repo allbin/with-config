@@ -29,6 +29,7 @@ function initiateFetch() {
         if (fetched_cb !== null) {
             fetched_cb(combined_cfg);
         }
+        get_config_listeners.forEach((listener) => { listener(); });
         component_listeners.forEach((listener) => { listener(); });
     }).catch((err) => {
         fetching_status = "failed";
