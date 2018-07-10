@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "outDir": "dist",
+        "sourceMap": true,
+        "strictNullChecks": false,
+        "module": "commonjs",
+        "jsx": "react",
+        "target": "es5",
+        "allowJs": true,
+        "lib": ["es7", "dom"]
+    },
+    "include": ["./src/"]
+}
