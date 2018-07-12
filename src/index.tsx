@@ -170,7 +170,7 @@ export function WithConfigHOC (
             }
             return <WrappedComponent config={combined_cfg} {...this.props} />;
         }
-    };
+    }
 
     return WithConfig;
 }
