@@ -86,13 +86,13 @@ function getConfig(): Promise<any> {
     });
 }
 
-export default function withConfig(
-    WrappedComponent = null,
-    SpinnerComponent = null,
-    ErrorComponent = null
+export default function(
+    WrappedComponent?: typeof React.Component,
+    SpinnerComponent?: typeof React.Component,
+    ErrorComponent?: typeof React.Component
 ): any {
-    if (WrappedComponent === null) {
-        return {
+    if (!WrappedComponent) {
+        let withConfigInterface: WithConfigFunction = {
             setDefault: (default_config) => {
                 if (default_cfg !== null) {
                     console.error(
@@ -134,68 +134,66 @@ export default function withConfig(
                 fetching_error_cb = cb;
             }
         };
+        return withConfigInterface;
     }
 
-    return <P extends object>(Component: React.ComponentType<P>) =>
-        class WithConfig extends React.Component<P, WithConfigState> {
-            constructor(props) {
-                super(props);
+    return class WithConfig extends React.Component<any, WithConfigState> {
+        constructor(props) {
+            super(props);
 
-                this.state = { error: false, loading: true };
+            this.state = { error: false, loading: true };
+        }
+
+        componentListener() {
+            if (fetching_status === 'failed') {
+                this.setState({ error: true });
             }
+            this.setState({ loading: false });
+        }
 
-            componentListener() {
-                if (fetching_status === 'failed') {
-                    this.setState({ error: true });
-                }
+        componentDidMount() {
+            component_listeners.push(() => {
+                this.componentListener();
+            });
+            if (fetching_status === 'fetched') {
                 this.setState({ loading: false });
+                return;
             }
-
-            componentDidMount() {
-                component_listeners.push(() => {
-                    this.componentListener();
-                });
-                if (fetching_status === 'fetched') {
-                    this.setState({ loading: false });
-                    return;
-                }
-                if (fetching_status === 'not_initialized') {
-                    initiateFetch();
-                }
+            if (fetching_status === 'not_initialized') {
+                initiateFetch();
             }
+        }
 
-            componentWillUnmount() {
-                let listener_index = component_listeners.indexOf(
-                    this.componentListener
-                );
-                component_listeners.splice(listener_index, 1);
-            }
+        componentWillUnmount() {
+            let listener_index = component_listeners.indexOf(
+                this.componentListener
+            );
+            component_listeners.splice(listener_index, 1);
+        }
 
-            render() {
-                if (this.state.error) {
-                    if (ErrorComponent !== null) {
-                        return <ErrorComponent />;
-                    }
-                    return (
-                        <p
-                            style={{
-                                textAlign: 'center',
-                                marginTop: '20%'
-                            }}
-                        >
-                            Oops, something went wrong.
-                        </p>
-                    );
-                }
-                if (this.state.loading) {
-                    if (SpinnerComponent !== null) {
-                        return <SpinnerComponent {...this.props} />;
-                    }
-                    return null;
+        render() {
+            if (this.state.error) {
+                if (ErrorComponent) {
+                    return <ErrorComponent />;
                 }
                 return (
-                    <WrappedComponent config={combined_cfg} {...this.props} />
+                    <p
+                        style={{
+                            textAlign: 'center',
+                            marginTop: '20%'
+                        }}
+                    >
+                        Oops, something went wrong.
+                    </p>
                 );
             }
-        };
+            if (this.state.loading) {
+                if (SpinnerComponent) {
+                    return <SpinnerComponent {...this.props} />;
+                }
+                return null;
+            }
+            return <WrappedComponent config={combined_cfg} {...this.props} />;
+        }
+    };
 }

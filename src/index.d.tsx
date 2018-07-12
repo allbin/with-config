@@ -1,4 +1,4 @@
-interface IWithConfig {
+interface WithConfigFunction {
     setDefault: (any) => void;
     fetch: () => any;
     getConfig: () => Promise<any>;
