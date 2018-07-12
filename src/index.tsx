@@ -1,5 +1,8 @@
 import * as React from 'react';
 import axios from 'axios';
+import withState from 'with-state';
+import state_definition from './state';
+
 
 export interface WithConfigFunction {
     setDefault: (any) => void;
@@ -16,7 +19,7 @@ export interface WithConfigState {
     loading: boolean;
 }
 
-
+let state = withState.addState("config", state_definition);
 
 let base_uri = window.location.protocol + '//' + window.location.host;
 let config_asset_uri = '/config.json';
@@ -44,6 +47,7 @@ function initiateFetch(): Promise<any> {
             fetched_cfg = res.data;
             combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
             fetching_status = 'completed';
+            state.actions.set(combined_cfg);
             if (fetched_cb !== null) {
                 fetched_cb(combined_cfg);
             }
