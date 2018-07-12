@@ -155,7 +155,7 @@ export default function(
             component_listeners.push(() => {
                 this.componentListener();
             });
-            if (fetching_status === 'fetched') {
+            if (fetching_status === 'completed') {
                 this.setState({ loading: false });
                 return;
             }
