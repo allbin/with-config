@@ -1,6 +1,23 @@
 import * as React from 'react';
 import axios from 'axios';
 
+export interface WithConfigFunction {
+    setDefault: (any) => void;
+    fetch: () => any;
+    getConfig: () => Promise<any>;
+    getDefault: () => any;
+    getFetched: () => any;
+    setFetchedCallback: (cb: (any) => any) => void;
+    setFetchingErrorCallback: (cb: (any) => any) => void;
+}
+
+export interface WithConfigState {
+    error: boolean;
+    loading: boolean;
+}
+
+
+
 let base_uri = window.location.protocol + '//' + window.location.host;
 let config_asset_uri = '/config.json';
 
@@ -62,7 +79,7 @@ function initiateFetch(): Promise<any> {
         });
 }
 
-function getConfig(): Promise<any> {
+function getCfg(): Promise<any> {
     return new Promise((resolve, reject) => {
         if (fetching_status === 'completed') {
             resolve(combined_cfg);
@@ -86,58 +103,16 @@ function getConfig(): Promise<any> {
     });
 }
 
-export default function(
-    WrappedComponent?: typeof React.Component,
+
+
+
+
+export function WithConfigHOC (
+    WrappedComponent: typeof React.Component,
     SpinnerComponent?: typeof React.Component,
     ErrorComponent?: typeof React.Component
-): any {
-    if (!WrappedComponent) {
-        let withConfigInterface: WithConfigFunction = {
-            setDefault: (default_config) => {
-                if (default_cfg !== null) {
-                    console.error(
-                        'withConfig error: Cannot setDefault; Default config already set!'
-                    );
-                    return;
-                }
-                if (typeof default_config !== 'object') {
-                    console.error(
-                        'withConfig error: Arguemnt default_config is required to be an object.'
-                    );
-                    return;
-                }
-                if (fetching_status !== 'not_initialized') {
-                    console.error(
-                        'withConfig error: Cannot setDefault after a withConfig-wrapped component has been mounted.'
-                    );
-                    return;
-                }
-                default_cfg = default_config;
-                combined_cfg = Object.assign({}, default_cfg);
-            },
-            fetch: () => {
-                return getConfig();
-            },
-            getConfig: () => {
-                return getConfig();
-            },
-            getDefault: () => {
-                return default_cfg;
-            },
-            getFetched: () => {
-                return fetched_cfg;
-            },
-            setFetchedCallback: (cb) => {
-                fetched_cb = cb;
-            },
-            setFetchingErrorCallback: (cb) => {
-                fetching_error_cb = cb;
-            }
-        };
-        return withConfigInterface;
-    }
-
-    return class WithConfig extends React.Component<any, WithConfigState> {
+): typeof React.Component {
+    class WithConfig extends React.Component<any, WithConfigState> {
         constructor(props) {
             super(props);
 
@@ -196,4 +171,51 @@ export default function(
             return <WrappedComponent config={combined_cfg} {...this.props} />;
         }
     };
+
+    return WithConfig;
 }
+
+export namespace WithConfigHOC {
+    export function setDefault(default_config) {
+        if (default_cfg !== null) {
+            console.error(
+                'withConfig error: Cannot setDefault; Default config already set!'
+            );
+            return;
+        }
+        if (typeof default_config !== 'object') {
+            console.error(
+                'withConfig error: Arguemnt default_config is required to be an object.'
+            );
+            return;
+        }
+        if (fetching_status !== 'not_initialized') {
+            console.error(
+                'withConfig error: Cannot setDefault after a withConfig-wrapped component has been mounted.'
+            );
+            return;
+        }
+        default_cfg = default_config;
+        combined_cfg = Object.assign({}, default_cfg);
+    }
+    export function fetch() {
+        return getCfg();
+    }
+    export function getConfig() {
+        return getCfg();
+    }
+    export function getDefault() {
+        return default_cfg;
+    }
+    export function getFetched() {
+        return fetched_cfg;
+    }
+    export function setFetchedCallback(cb) {
+        fetched_cb = cb;
+    }
+    export function setFetchingErrorCallback(cb) {
+        fetching_error_cb = cb;
+    }
+}
+
+export default WithConfigHOC;
