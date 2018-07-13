@@ -29,6 +29,22 @@ gulp.task('build', function () {
 });
 
 
+function tagDevAndPush(cb) {
+    try {
+        let pkg = JSON.parse(fs.readFileSync('package.json'));
+
+        Promise.resolve()
+            .then(() => { return execPromise('git add package.json dist'); })
+            .then(() => { return execPromise('git commit -m "Release v' + pkg.version + '"'); })
+            .then(() => { return execPromise('git tag v' + pkg.version); })
+            .then(() => { return execPromise('git push && git push --tags'); })
+            .then(() => { return cb(); });
+
+    } catch (err) {
+        return cb(err);
+    }
+}
+
 
 gulp.task('release:patch', gulp.series("clean", "build", allbin.tagAndPush(["package.json", "dist"], "patch")));
 gulp.task('release:minor', gulp.series("clean", "build", allbin.tagAndPush(["package.json", "dist"], "minor")));
