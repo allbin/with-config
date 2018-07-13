@@ -51,19 +51,21 @@ export default class MyComp extends React.Component {
 
 ```
 
-### Example with default config and initial fetch
+### Example with default config, initial fetch and store integration
 ```
 import React from 'react';
 import withConfig from 'with-config';
+import withState from 'with-state';
 import default_config from './default_config.js';
 import SomeComponent from './components/SomeComponent';
 
-withConfig().setDefault(default_config);
-withConfig().getConfig().then((config) => {
+withConfig.addStore(withState);
+withConfig.setDefault(default_config);
+withConfig.getConfig().then((config) => {
     //Do something with config.
     //Such as configure ErrorReporting URLs etc.
 }).catch((err) => {
-    //Fetch failed. The use will see the default error message
+    //Fetch failed. The user will see the default error message
     //or optional ErrorComponent.
 });
 
@@ -101,24 +103,27 @@ Defaults to showing the text "Oops, something went wrong." if no ErrorComponent 
 
 # Utility functions
 
-`withConfig().getConfig()` - Returns a promise that resolves to the current config values, any default values merged with any fetched values.  
-If the fetch has not been initiated it will be by this call and it will resolve once finished. Alias: `withConfig().fetch()`.
+`withConfig.addStore(<store>)` - withConfig will call the supplied stores addState function with an object containing a reducer and actions for use with a redux store; *store.addState({ reducer: fn, actions: {...} })*.  
+The state will automatically populate with the configs either when they are finished fetching or immediately if the config is already fetched. Can be called multiple times.
 
-`withConfig().getDefault()` - Returns default config values. If none are set returns null.
+`withConfig.getConfig()` - Returns a promise that resolves to the current config values, any default values merged with any fetched values.  
+If the fetch has not been initiated it will be by this call and it will resolve once finished. Alias: `withConfig.fetch()`.
 
-`withConfig().getFetched()` - Returns the fetched config values.
+`withConfig.getDefault()` - Returns default config values. If none are set returns null.
 
-`withConfig().setDefault(<object>)` - See [Setting default config](#setting-default-config).
+`withConfig.getFetched()` - Returns the fetched config values.
 
-`withConfig().setFetchedCallback(<callback function>)` - If set this function will trigger when fetching settings from server has completed. The callbacks only parameter will be the final config object.
+`withConfig.setDefault(<object>)` - See [Setting default config](#setting-default-config).
 
-`withConfig().setFetchErrorCallback(<callback function>)` - See [Error handling](#error-handling).
+`withConfig.setFetchedCallback(<callback function>)` - If set this function will trigger when fetching settings from server has completed. The callbacks only parameter will be the final config object.
+
+`withConfig.setFetchErrorCallback(<callback function>)` - See [Error handling](#error-handling).
 
 
 
 
 # Setting default config
-Use `withConfig().setDefault(<object>)` to set the default config. Returns nothing.
+Use `withConfig.setDefault(<object>)` to set the default config. Returns nothing.
 
 **NOTE:** Defaults will be overwritten by fetched config settings.  
 **NOTE:** Defaults can only be set before the first wrapped component has mounted.  
@@ -126,6 +131,6 @@ Use `withConfig().setDefault(<object>)` to set the default config. Returns nothi
 
 
 # Error handling
-Use `withConfig().setFetchErrorCallback(<callback function>)` to assign a callback function which is called with the Exception object if fetching from the server fails.
+Use `withConfig.setFetchErrorCallback(<callback function>)` to assign a callback function which is called with the Exception object if fetching from the server fails.
 
 **NOTE:** If the fetch fails the optional [ErrorComponent](#error-component) will show.
