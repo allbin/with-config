@@ -51,19 +51,21 @@ export default class MyComp extends React.Component {
 
 ```
 
-### Example with default config and initial fetch
+### Example with default config, initial fetch and store integration
 ```
 import React from 'react';
 import withConfig from 'with-config';
+import withState from 'with-state';
 import default_config from './default_config.js';
 import SomeComponent from './components/SomeComponent';
 
+withConfig.addStore(withState);
 withConfig.setDefault(default_config);
 withConfig.getConfig().then((config) => {
     //Do something with config.
     //Such as configure ErrorReporting URLs etc.
 }).catch((err) => {
-    //Fetch failed. The use will see the default error message
+    //Fetch failed. The user will see the default error message
     //or optional ErrorComponent.
 });
 
