@@ -172,6 +172,12 @@ export function WithConfigHOC (
 }
 
 export namespace WithConfigHOC {
+    export function addStore(store) {
+        let i = stores.push(store.addState("config", state_definition));
+        if (fetching_status === "completed") {
+            stores[i].actions.set(combined_cfg);
+        }
+    }
     export function setDefault(default_config) {
         if (default_cfg !== null) {
             console.error(
@@ -211,12 +217,6 @@ export namespace WithConfigHOC {
     }
     export function setFetchingErrorCallback(cb) {
         fetching_error_cb = cb;
-    }
-    export function addStore(store) {
-        let i = stores.push(store.addState("config", state_definition));
-        if (fetching_status === "completed") {
-            stores[i].actions.set(combined_cfg);
-        }
     }
 }
 
