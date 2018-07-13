@@ -5,7 +5,6 @@ const axios_1 = require("axios");
 const with_state_1 = require("with-state");
 const state_1 = require("./state");
 let state = with_state_1.default.addState("config", state_1.default);
-console.log(state);
 let base_uri = window.location.protocol + '//' + window.location.host;
 let config_asset_uri = '/config.json';
 let default_cfg = null;
@@ -103,32 +102,8 @@ function WithConfigHOC(WrappedComponent, SpinnerComponent, ErrorComponent) {
                 this.setState({ loading: false });
                 return;
             }
-<<<<<<< HEAD
-        }, {
-            key: 'componentDidMount',
-            value: function componentDidMount() {
-                var _this2 = this;
-
-                component_listeners.push(function () {
-                    _this2.componentListener();
-                });
-                if (fetching_status === "completed") {
-                    this.setState({ loading: false });
-                    return;
-                }
-                if (fetching_status === "not_initialized") {
-                    initiateFetch();
-                }
-            }
-        }, {
-            key: 'componentWillUnmount',
-            value: function componentWillUnmount() {
-                var listener_index = component_listeners.indexOf(this.componentListener);
-                component_listeners.splice(listener_index, 1);
-=======
             if (fetching_status === 'not_initialized') {
                 initiateFetch();
->>>>>>> ts
             }
         }
         componentWillUnmount() {
