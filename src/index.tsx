@@ -1,25 +1,17 @@
 import * as React from 'react';
 import axios from 'axios';
-import withState from 'with-state';
 import state_definition from './state';
 
 
-export interface WithConfigFunction {
-    setDefault: (any) => void;
-    fetch: () => any;
-    getConfig: () => Promise<any>;
-    getDefault: () => any;
-    getFetched: () => any;
-    setFetchedCallback: (cb: (any) => any) => void;
-    setFetchingErrorCallback: (cb: (any) => any) => void;
-}
 
 export interface WithConfigState {
     error: boolean;
     loading: boolean;
 }
 
-let state = withState.addState("config", state_definition);
+type Status = "not_initialized" | "fetching" | "completed" | "failed";
+
+let stores = [];
 
 let base_uri = window.location.protocol + '//' + window.location.host;
 let config_asset_uri = '/config.json';
@@ -32,7 +24,7 @@ let fetched_cb = null;
 let fetching_error_cb = null;
 let fetching_error = null;
 
-let fetching_status = 'not_initialized';
+let fetching_status: Status = 'not_initialized';
 let get_config_listeners = [];
 let component_listeners = [];
 
@@ -47,7 +39,9 @@ function initiateFetch(): Promise<any> {
             fetched_cfg = res.data;
             combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
             fetching_status = 'completed';
-            state.actions.set(combined_cfg);
+            stores.forEach((store) => {
+                store.actions.set(combined_cfg);
+            });
             if (fetched_cb !== null) {
                 fetched_cb(combined_cfg);
             }
@@ -106,8 +100,6 @@ function getCfg(): Promise<any> {
         }
     });
 }
-
-
 
 
 
@@ -219,6 +211,12 @@ export namespace WithConfigHOC {
     }
     export function setFetchingErrorCallback(cb) {
         fetching_error_cb = cb;
+    }
+    export function addStore(store) {
+        let i = stores.push(store.addState("config", state_definition));
+        if (fetching_status === "completed") {
+            stores[i].actions.set(combined_cfg);
+        }
     }
 }
 
