@@ -4,10 +4,10 @@
     "description": "",
     "main": "dist/index.js",
     "scripts": {
-        "release": "gulp4 release:patch",
         "release:patch": "gulp4 release:patch",
         "release:minor": "gulp4 release:minor",
         "release:major": "gulp4 release:major",
+        "release:dev": "gulp4 release:dev",
         "build": "gulp4 build",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
