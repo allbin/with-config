@@ -2,9 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = require("react");
 const axios_1 = require("axios");
-const with_state_1 = require("with-state");
 const state_1 = require("./state");
-let state = with_state_1.default.addState("config", state_1.default);
+let stores = [];
 let base_uri = window.location.protocol + '//' + window.location.host;
 let config_asset_uri = '/config.json';
 let default_cfg = null;
@@ -26,7 +25,9 @@ function initiateFetch() {
         fetched_cfg = res.data;
         combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
         fetching_status = 'completed';
-        state.actions.set(combined_cfg);
+        stores.forEach((store) => {
+            store.actions.set(combined_cfg);
+        });
         if (fetched_cb !== null) {
             fetched_cb(combined_cfg);
         }
@@ -174,6 +175,13 @@ exports.WithConfigHOC = WithConfigHOC;
         fetching_error_cb = cb;
     }
     WithConfigHOC.setFetchingErrorCallback = setFetchingErrorCallback;
+    function addStore(store) {
+        let i = stores.push(store.addState("config", state_1.default));
+        if (fetching_status === "completed") {
+            stores[i].actions.set(combined_cfg);
+        }
+    }
+    WithConfigHOC.addStore = addStore;
 })(WithConfigHOC = exports.WithConfigHOC || (exports.WithConfigHOC = {}));
 exports.default = WithConfigHOC;
 
