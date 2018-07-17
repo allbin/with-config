@@ -16,8 +16,8 @@ let stores = [];
 let base_uri = window.location.protocol + '//' + window.location.host;
 let config_asset_uri = '/config.json';
 
-let default_cfg = null;
-let fetched_cfg = null;
+let default_cfg: object = {};
+let fetched_cfg: object = {};
 let combined_cfg = {};
 
 let fetched_cb = null;
@@ -173,26 +173,16 @@ export function WithConfigHOC (
 
 export namespace WithConfigHOC {
     export function setDefault(default_config) {
-        if (default_cfg !== null) {
-            console.error(
-                'withConfig error: Cannot setDefault; Default config already set!'
-            );
+        if (Object.keys(default_cfg).length > 0) {
+            console.error('withConfig error: Cannot setDefault; Default config already set!');
             return;
         }
         if (typeof default_config !== 'object') {
-            console.error(
-                'withConfig error: Arguemnt default_config is required to be an object.'
-            );
-            return;
-        }
-        if (fetching_status !== 'not_initialized') {
-            console.error(
-                'withConfig error: Cannot setDefault after a withConfig-wrapped component has been mounted.'
-            );
+            console.error('withConfig error: Arguemnt default_config is required to be an object.');
             return;
         }
         default_cfg = default_config;
-        combined_cfg = Object.assign({}, default_cfg);
+        combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
     }
     export function fetch() {
         return getCfg();

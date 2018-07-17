@@ -44,5 +44,6 @@
         "use-isnan": { "severity": "error" },
         "valid-typeof": { "severity": "error" }
     },
-    "defaultSeverity": "warning"
+    "defaultSeverity": "warning",
+    "exclude": ["*./tmp/"]
 }
