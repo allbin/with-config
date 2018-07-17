@@ -8,8 +8,8 @@ export declare namespace WithConfigHOC {
     function setDefault(default_config: any): void;
     function fetch(): Promise<any>;
     function getConfig(): Promise<any>;
-    function getDefault(): any;
-    function getFetched(): any;
+    function getDefault(): object;
+    function getFetched(): object;
     function setFetchedCallback(cb: any): void;
     function setFetchingErrorCallback(cb: any): void;
     function addStore(store: any): void;
