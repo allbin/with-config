@@ -7,7 +7,7 @@ export declare function WithConfigHOC(WrappedComponent: typeof React.Component, 
 export declare namespace WithConfigHOC {
     function setDefault(default_config: any): void;
     function fetch(): Promise<any>;
-    function getConfig(): Promise<any>;
+    function getConfig(): any;
     function getDefault(): object;
     function getFetched(): object;
     function setFetchedCallback(cb: any): void;
