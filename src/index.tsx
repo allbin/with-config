@@ -77,7 +77,7 @@ function initiateFetch(): Promise<any> {
         });
 }
 
-function getCfg(): Promise<any> {
+function fetchCfg(): Promise<any> {
     return new Promise((resolve, reject) => {
         if (fetching_status === 'completed') {
             resolve(combined_cfg);
@@ -101,6 +101,13 @@ function getCfg(): Promise<any> {
     });
 }
 
+function getCfg(): any {
+    if (fetching_status !== "completed") {
+        console.warn(`withConfig: getConfig was run before config finished fetching.
+        withConfig.fetch() returns a promise which resolves when fetch completes, you might want to use it instead.`);
+    }
+    return combined_cfg;
+}
 
 
 export function WithConfigHOC (
@@ -185,7 +192,7 @@ export namespace WithConfigHOC {
         combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
     }
     export function fetch() {
-        return getCfg();
+        return fetchCfg();
     }
     export function getConfig() {
         return getCfg();

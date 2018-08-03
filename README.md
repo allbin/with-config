@@ -106,8 +106,10 @@ Defaults to showing the text "Oops, something went wrong." if no ErrorComponent 
 `withConfig.addStore(<store>)` - withConfig will call the supplied stores addState function with an object containing a reducer and actions for use with a redux store; *store.addState({ reducer: fn, actions: {...} })*.  
 The state will automatically populate with the configs either when they are finished fetching or immediately if the config is already fetched. Can be called multiple times.
 
-`withConfig.getConfig()` - Returns a promise that resolves to the current config values, any default values merged with any fetched values.  
-If the fetch has not been initiated it will be by this call and it will resolve once finished. Alias: `withConfig.fetch()`.
+`withConfig.fetch()` - Returns a promise that resolves to the current config values, any default values merged with any fetched values.  
+If the fetch has not been initiated it will be by this call and it will resolve once finished. 
+
+`withConfig.getConfig()` - Returns the config values currently in withConfig, a warning is shown in console if this function is executed before fetching has finished. Sync version of *fetch()*.
 
 `withConfig.getDefault()` - Returns default config values. If none are set returns null.
 
