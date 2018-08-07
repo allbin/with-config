@@ -1,44 +1,62 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const React = require("react");
-const axios_1 = require("axios");
-const state_1 = require("./state");
-let stores = [];
-let base_uri = window.location.protocol + '//' + window.location.host;
-let config_asset_uri = '/config.json';
-let default_cfg = {};
-let fetched_cfg = {};
-let combined_cfg = {};
-let fetched_cb = null;
-let fetching_error_cb = null;
-let fetching_error = null;
-let fetching_status = 'not_initialized';
-let get_config_listeners = [];
-let component_listeners = [];
+var React = require("react");
+var axios_1 = require("axios");
+var state_1 = require("./state");
+var stores = [];
+var base_uri = window.location.protocol + '//' + window.location.host;
+var config_asset_uri = '/config.json';
+var default_cfg = {};
+var fetched_cfg = {};
+var combined_cfg = {};
+var fetched_cb = null;
+var fetching_error_cb = null;
+var fetching_error = null;
+var fetching_status = 'not_initialized';
+var get_config_listeners = [];
+var component_listeners = [];
 function initiateFetch() {
     fetching_status = 'fetching';
     return axios_1.default({
         url: base_uri + config_asset_uri,
         method: 'GET'
     })
-        .then((res) => {
+        .then(function (res) {
         fetched_cfg = res.data;
         combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
         fetching_status = 'completed';
-        stores.forEach((store) => {
+        stores.forEach(function (store) {
             store.actions.set(combined_cfg);
         });
         if (fetched_cb !== null) {
             fetched_cb(combined_cfg);
         }
-        get_config_listeners.forEach((listener) => {
+        get_config_listeners.forEach(function (listener) {
             listener();
         });
-        component_listeners.forEach((listener) => {
+        component_listeners.forEach(function (listener) {
             listener();
         });
     })
-        .catch((err) => {
+        .catch(function (err) {
         fetching_status = 'failed';
         err.network_error = true;
         fetching_error = err;
@@ -51,17 +69,17 @@ function initiateFetch() {
             console.error('withConfig: ERROR WHEN FETCHING CONFIG:');
             console.error(err);
         }
-        get_config_listeners.forEach((listener) => {
+        get_config_listeners.forEach(function (listener) {
             listener();
         });
-        component_listeners.forEach((listener) => {
+        component_listeners.forEach(function (listener) {
             listener();
         });
         throw err;
     });
 }
 function fetchCfg() {
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
         if (fetching_status === 'completed') {
             resolve(combined_cfg);
             return;
@@ -70,7 +88,7 @@ function fetchCfg() {
             reject(fetching_error);
             return;
         }
-        get_config_listeners.push(() => {
+        get_config_listeners.push(function () {
             if (fetching_status === 'completed') {
                 resolve(combined_cfg);
                 return;
@@ -85,26 +103,28 @@ function fetchCfg() {
 }
 function getCfg() {
     if (fetching_status !== "completed") {
-        console.warn(`withConfig: getConfig was run before config finished fetching.
-        withConfig.fetch() returns a promise which resolves when fetch completes, you might want to use it instead.`);
+        console.warn("withConfig: getConfig was run before config finished fetching.\n        withConfig.fetch() returns a promise which resolves when fetch completes, you might want to use it instead.");
     }
     return combined_cfg;
 }
 function WithConfigHOC(WrappedComponent, SpinnerComponent, ErrorComponent) {
-    class WithConfig extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = { error: false, loading: true };
+    var WithConfig = /** @class */ (function (_super) {
+        __extends(WithConfig, _super);
+        function WithConfig(props) {
+            var _this = _super.call(this, props) || this;
+            _this.state = { error: false, loading: true };
+            return _this;
         }
-        componentListener() {
+        WithConfig.prototype.componentListener = function () {
             if (fetching_status === 'failed') {
                 this.setState({ error: true });
             }
             this.setState({ loading: false });
-        }
-        componentDidMount() {
-            component_listeners.push(() => {
-                this.componentListener();
+        };
+        WithConfig.prototype.componentDidMount = function () {
+            var _this = this;
+            component_listeners.push(function () {
+                _this.componentListener();
             });
             if (fetching_status === 'completed') {
                 this.setState({ loading: false });
@@ -113,12 +133,12 @@ function WithConfigHOC(WrappedComponent, SpinnerComponent, ErrorComponent) {
             if (fetching_status === 'not_initialized') {
                 initiateFetch();
             }
-        }
-        componentWillUnmount() {
-            let listener_index = component_listeners.indexOf(this.componentListener);
+        };
+        WithConfig.prototype.componentWillUnmount = function () {
+            var listener_index = component_listeners.indexOf(this.componentListener);
             component_listeners.splice(listener_index, 1);
-        }
-        render() {
+        };
+        WithConfig.prototype.render = function () {
             if (this.state.error) {
                 if (ErrorComponent) {
                     return React.createElement(ErrorComponent, null);
@@ -130,13 +150,14 @@ function WithConfigHOC(WrappedComponent, SpinnerComponent, ErrorComponent) {
             }
             if (this.state.loading) {
                 if (SpinnerComponent) {
-                    return React.createElement(SpinnerComponent, Object.assign({}, this.props));
+                    return React.createElement(SpinnerComponent, __assign({}, this.props));
                 }
                 return null;
             }
-            return React.createElement(WrappedComponent, Object.assign({ config: combined_cfg }, this.props));
-        }
-    }
+            return React.createElement(WrappedComponent, __assign({ config: combined_cfg }, this.props));
+        };
+        return WithConfig;
+    }(React.Component));
     return WithConfig;
 }
 exports.WithConfigHOC = WithConfigHOC;
@@ -179,7 +200,7 @@ exports.WithConfigHOC = WithConfigHOC;
     }
     WithConfigHOC.setFetchingErrorCallback = setFetchingErrorCallback;
     function addStore(store) {
-        let i = stores.push(store.addState("config", state_1.default));
+        var i = stores.push(store.addState("config", state_1.default));
         if (fetching_status === "completed") {
             stores[i].actions.set(combined_cfg);
         }

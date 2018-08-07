@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const SET_CONFIG_STATE = "SET_CONFIG_STATE";
-let default_state = {
+var SET_CONFIG_STATE = "SET_CONFIG_STATE";
+var default_state = {
     config_initialized: false
 };
-let reducer = (state = default_state, action) => {
+var reducer = function (state, action) {
+    if (state === void 0) { state = default_state; }
     switch (action.type) {
         case SET_CONFIG_STATE: {
             return Object.assign({}, action.payload);
@@ -14,14 +15,14 @@ let reducer = (state = default_state, action) => {
         }
     }
 };
-let actions = {
-    set: (state, config) => {
+var actions = {
+    set: function (state, config) {
         return {
             type: SET_CONFIG_STATE,
             payload: Object.assign({ config_initialized: true }, config)
         };
     },
-    update: (state, new_config_settings) => {
+    update: function (state, new_config_settings) {
         return {
             type: SET_CONFIG_STATE,
             payload: Object.assign({ config_initialized: true }, state, new_config_settings)
