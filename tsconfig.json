@@ -7,7 +7,7 @@
         "strictNullChecks": false,
         "module": "commonjs",
         "jsx": "react",
-        "target": "es6",
+        "target": "es5",
         "lib": ["es7", "dom"]
     },
     "include": ["./src/"],
