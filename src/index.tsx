@@ -35,46 +35,50 @@ function initiateFetch(): Promise<any> {
         url: base_uri + config_asset_uri,
         method: 'GET'
     })
-        .then((res) => {
-            fetched_cfg = res.data;
-            combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
-            fetching_status = 'completed';
-            stores.forEach((store) => {
-                store.actions.set(combined_cfg);
-            });
-            if (fetched_cb !== null) {
-                fetched_cb(combined_cfg);
-            }
-            get_config_listeners.forEach((listener) => {
-                listener();
-            });
-            component_listeners.forEach((listener) => {
-                listener();
-            });
-        })
-        .catch((err) => {
-            fetching_status = 'failed';
-            err.network_error = true;
-            fetching_error = err;
-            if (fetching_error_cb !== null) {
-                fetching_error_cb(err);
-                return;
-            }
-            if (
-                get_config_listeners.length === 0 &&
-                fetching_error_cb === null
-            ) {
-                console.error('withConfig: ERROR WHEN FETCHING CONFIG:');
-                console.error(err);
-            }
-            get_config_listeners.forEach((listener) => {
-                listener();
-            });
-            component_listeners.forEach((listener) => {
-                listener();
-            });
-            throw err;
+    .then((res) => {
+        fetched_cfg = res.data;
+        combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
+        fetching_status = 'completed';
+        stores.forEach((store) => {
+            store.actions.set(combined_cfg);
         });
+        if (fetched_cb !== null) {
+            fetched_cb(combined_cfg);
+        }
+        get_config_listeners.forEach((listener) => {
+            listener();
+        });
+        setTimeout(() => {
+            //Timeout here to force the component listeners to the end of the execution chain,
+            //after the callbacks have all been executed.
+            component_listeners.forEach((listener) => {
+                listener();
+            });
+        }, 10);
+    })
+    .catch((err) => {
+        fetching_status = 'failed';
+        err.network_error = true;
+        fetching_error = err;
+        if (fetching_error_cb !== null) {
+            fetching_error_cb(err);
+            return;
+        }
+        if (
+            get_config_listeners.length === 0 &&
+            fetching_error_cb === null
+        ) {
+            console.error('withConfig: ERROR WHEN FETCHING CONFIG:');
+            console.error(err);
+        }
+        get_config_listeners.forEach((listener) => {
+            listener();
+        });
+        component_listeners.forEach((listener) => {
+            listener();
+        });
+        throw err;
+    });
 }
 
 function fetchCfg(): Promise<any> {
