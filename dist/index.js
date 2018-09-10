@@ -52,9 +52,13 @@ function initiateFetch() {
         get_config_listeners.forEach(function (listener) {
             listener();
         });
-        component_listeners.forEach(function (listener) {
-            listener();
-        });
+        setTimeout(function () {
+            //Timeout here to force the component listeners to the end of the execution chain,
+            //after the callbacks have all been executed.
+            component_listeners.forEach(function (listener) {
+                listener();
+            });
+        }, 10);
     })
         .catch(function (err) {
         fetching_status = 'failed';
