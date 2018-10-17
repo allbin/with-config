@@ -20,6 +20,8 @@ let default_cfg: object = {};
 let fetched_cfg: object = {};
 let combined_cfg = {};
 
+let debug_cb = null;
+
 let fetched_cb = null;
 let fetching_error_cb = null;
 let fetching_error = null;
@@ -30,12 +32,18 @@ let component_listeners = [];
 
 function initiateFetch(): Promise<any> {
     fetching_status = 'fetching';
+    if (debug_cb) {
+        debug_cb("Fetching");
+    }
 
     return axios({
         url: base_uri + config_asset_uri,
         method: 'GET'
     })
     .then((res) => {
+        if (debug_cb) {
+            debug_cb("Fetch completed " + JSON.stringify(fetched_cfg));
+        }
         fetched_cfg = res.data;
         combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
         fetching_status = 'completed';
@@ -54,9 +62,15 @@ function initiateFetch(): Promise<any> {
             component_listeners.forEach((listener) => {
                 listener();
             });
+            if (debug_cb) {
+                debug_cb("Component listeners called.");
+            }
         }, 10);
     })
     .catch((err) => {
+        if (debug_cb) {
+            debug_cb("Fetching failed: " + err.message);
+        }
         fetching_status = 'failed';
         err.network_error = true;
         fetching_error = err;
@@ -175,7 +189,7 @@ export function WithConfigHOC (
                 }
                 return null;
             }
-            return <WrappedComponent config={combined_cfg} {...this.props} />;
+            return <WrappedComponent config={combined_cfg} config_state={this.state} {...this.props} />;
         }
     }
 
@@ -218,6 +232,9 @@ export namespace WithConfigHOC {
         if (fetching_status === "completed") {
             stores[i].actions.set(combined_cfg);
         }
+    }
+    export function setDebugCallback(cb) {
+        debug_cb = cb;
     }
 }
 
