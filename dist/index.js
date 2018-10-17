@@ -37,17 +37,17 @@ var component_listeners = [];
 function initiateFetch() {
     fetching_status = 'fetching';
     if (debug_cb) {
-        debug_cb("Fetching");
+        debug_cb("Fetching: " + base_uri + config_asset_uri);
     }
     return axios_1.default({
         url: base_uri + config_asset_uri,
         method: 'GET'
     })
         .then(function (res) {
+        fetched_cfg = res.data;
         if (debug_cb) {
             debug_cb("Fetch completed " + JSON.stringify(fetched_cfg));
         }
-        fetched_cfg = res.data;
         combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
         fetching_status = 'completed';
         stores.forEach(function (store) {
