@@ -13,6 +13,7 @@ export declare namespace WithConfigHOC {
     function setFetchedCallback(cb: any): void;
     function setFetchingErrorCallback(cb: any): void;
     function addStore(store: any): void;
+    function setDebugCallback(cb: any): void;
 }
 export default WithConfigHOC;
 //# sourceMappingURL=index.d.ts.map

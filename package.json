@@ -1,6 +1,6 @@
 {
     "name": "with-config",
-    "version": "4.0.2",
+    "version": "4.1.0",
     "description": "",
     "main": "dist/index.js",
     "scripts": {

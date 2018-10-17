@@ -27,6 +27,7 @@ var config_asset_uri = '/config.json';
 var default_cfg = {};
 var fetched_cfg = {};
 var combined_cfg = {};
+var debug_cb = null;
 var fetched_cb = null;
 var fetching_error_cb = null;
 var fetching_error = null;
@@ -35,11 +36,17 @@ var get_config_listeners = [];
 var component_listeners = [];
 function initiateFetch() {
     fetching_status = 'fetching';
+    if (debug_cb) {
+        debug_cb("Fetching");
+    }
     return axios_1.default({
         url: base_uri + config_asset_uri,
         method: 'GET'
     })
         .then(function (res) {
+        if (debug_cb) {
+            debug_cb("Fetch completed " + JSON.stringify(fetched_cfg));
+        }
         fetched_cfg = res.data;
         combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
         fetching_status = 'completed';
@@ -58,9 +65,15 @@ function initiateFetch() {
             component_listeners.forEach(function (listener) {
                 listener();
             });
+            if (debug_cb) {
+                debug_cb("Component listeners called.");
+            }
         }, 10);
     })
         .catch(function (err) {
+        if (debug_cb) {
+            debug_cb("Fetching failed: " + err.message);
+        }
         fetching_status = 'failed';
         err.network_error = true;
         fetching_error = err;
@@ -158,7 +171,7 @@ function WithConfigHOC(WrappedComponent, SpinnerComponent, ErrorComponent) {
                 }
                 return null;
             }
-            return React.createElement(WrappedComponent, __assign({ config: combined_cfg }, this.props));
+            return React.createElement(WrappedComponent, __assign({ config: combined_cfg, config_state: this.state }, this.props));
         };
         return WithConfig;
     }(React.Component));
@@ -210,6 +223,10 @@ exports.WithConfigHOC = WithConfigHOC;
         }
     }
     WithConfigHOC.addStore = addStore;
+    function setDebugCallback(cb) {
+        debug_cb = cb;
+    }
+    WithConfigHOC.setDebugCallback = setDebugCallback;
 })(WithConfigHOC = exports.WithConfigHOC || (exports.WithConfigHOC = {}));
 exports.default = WithConfigHOC;
 
