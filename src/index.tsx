@@ -39,8 +39,7 @@ function initiateFetch(): Promise<any> {
     return axios({
         url: base_uri + config_asset_uri,
         method: 'GET'
-    })
-    .then((res) => {
+    }).then((res) => {
         fetched_cfg = res.data;
         if (debug_cb) {
             debug_cb("Fetch completed " + JSON.stringify(fetched_cfg));
@@ -66,8 +65,7 @@ function initiateFetch(): Promise<any> {
                 debug_cb("Component listeners called.");
             }
         }, 10);
-    })
-    .catch((err) => {
+    }).catch((err) => {
         if (debug_cb) {
             debug_cb("Fetching failed: " + err.message);
         }
@@ -128,7 +126,7 @@ function getCfg(): any {
 }
 
 
-export function WithConfigHOC (
+export function WithConfigHOC(
     WrappedComponent: typeof React.Component,
     SpinnerComponent?: typeof React.Component,
     ErrorComponent?: typeof React.Component
@@ -183,7 +181,11 @@ export function WithConfigHOC (
                     </p>
                 );
             }
-            if (this.state.loading) {
+            let store_status = stores.every((store) => {
+                return store.getState().config_initialized === true;
+            });
+
+            if (this.state.loading || !store_status) {
                 if (SpinnerComponent) {
                     return <SpinnerComponent {...this.props} />;
                 }
@@ -229,6 +231,11 @@ export namespace WithConfigHOC {
     }
     export function addStore(store) {
         let i = stores.push(store.addState("config", state_definition));
+        stores[i].addUpdateCallback(() => {
+            component_listeners.forEach((listener) => {
+                listener();
+            });
+        });
         if (fetching_status === "completed") {
             stores[i].actions.set(combined_cfg);
         }
