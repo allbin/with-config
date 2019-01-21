@@ -21,13 +21,13 @@ let reducer = (state = default_state, action) => {
 };
 
 let actions = {
-    set: (state, config) => {
+    set: (config, state) => {
         return {
             type: SET_CONFIG_STATE,
             payload: Object.assign({ config_initialized: true }, config)
         };
     },
-    update: (state, new_config_settings) => {
+    update: (new_config_settings, state) => {
         return {
             type: SET_CONFIG_STATE,
             payload: Object.assign({ config_initialized: true }, state, new_config_settings)

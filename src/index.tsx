@@ -231,6 +231,9 @@ export namespace WithConfigHOC {
     }
     export function addStore(store) {
         let i = stores.push(store.addState("config", state_definition));
+        if (stores[i].hasOwnProperty("addUpdateCallback") === false) {
+            throw new Error("Missing prop 'addUpdateCallback' on addState return object. Ensure store version >=3.0.8.");
+        }
         stores[i].addUpdateCallback(() => {
             component_listeners.forEach((listener) => {
                 listener();
