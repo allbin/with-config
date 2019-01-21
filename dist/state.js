@@ -16,13 +16,13 @@ var reducer = function (state, action) {
     }
 };
 var actions = {
-    set: function (state, config) {
+    set: function (config, state) {
         return {
             type: SET_CONFIG_STATE,
             payload: Object.assign({ config_initialized: true }, config)
         };
     },
-    update: function (state, new_config_settings) {
+    update: function (new_config_settings, state) {
         return {
             type: SET_CONFIG_STATE,
             payload: Object.assign({ config_initialized: true }, state, new_config_settings)

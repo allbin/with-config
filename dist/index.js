@@ -48,8 +48,7 @@ function initiateFetch() {
     return axios_1.default({
         url: base_uri + config_asset_uri,
         method: 'GET'
-    })
-        .then(function (res) {
+    }).then(function (res) {
         fetched_cfg = res.data;
         if (debug_cb) {
             debug_cb("Fetch completed " + JSON.stringify(fetched_cfg));
@@ -75,8 +74,7 @@ function initiateFetch() {
                 debug_cb("Component listeners called.");
             }
         }, 10);
-    })
-        .catch(function (err) {
+    }).catch(function (err) {
         if (debug_cb) {
             debug_cb("Fetching failed: " + err.message);
         }
@@ -171,7 +169,10 @@ function WithConfigHOC(WrappedComponent, SpinnerComponent, ErrorComponent) {
                         marginTop: '20%'
                     } }, "Oops, something went wrong."));
             }
-            if (this.state.loading) {
+            var store_status = stores.every(function (store) {
+                return store.getState().config_initialized === true;
+            });
+            if (this.state.loading || !store_status) {
                 if (SpinnerComponent) {
                     return React.createElement(SpinnerComponent, __assign({}, this.props));
                 }
@@ -224,6 +225,14 @@ exports.WithConfigHOC = WithConfigHOC;
     WithConfigHOC.setFetchingErrorCallback = setFetchingErrorCallback;
     function addStore(store) {
         var i = stores.push(store.addState("config", state_1.default));
+        if (stores[i].hasOwnProperty("addUpdateCallback") === false) {
+            throw new Error("Missing prop 'addUpdateCallback' on addState return object. Ensure store version >=3.0.8.");
+        }
+        stores[i].addUpdateCallback(function () {
+            component_listeners.forEach(function (listener) {
+                listener();
+            });
+        });
         if (fetching_status === "completed") {
             stores[i].actions.set(combined_cfg);
         }

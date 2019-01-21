@@ -5,11 +5,11 @@ interface InitialState {
 declare const _default: {
     reducer: (state: InitialState, action: any) => any;
     actions: {
-        set: (state: any, config: any) => {
+        set: (config: any, state: any) => {
             type: string;
             payload: any;
         };
-        update: (state: any, new_config_settings: any) => {
+        update: (new_config_settings: any, state: any) => {
             type: string;
             payload: any;
         };
