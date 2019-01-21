@@ -225,16 +225,16 @@ exports.WithConfigHOC = WithConfigHOC;
     WithConfigHOC.setFetchingErrorCallback = setFetchingErrorCallback;
     function addStore(store) {
         var i = stores.push(store.addState("config", state_1.default));
-        if (stores[i].hasOwnProperty("addUpdateCallback") === false) {
+        if (stores[i - 1].hasOwnProperty("addUpdateCallback") === false) {
             throw new Error("Missing prop 'addUpdateCallback' on addState return object. Ensure store version >=3.0.8.");
         }
-        stores[i].addUpdateCallback(function () {
+        stores[i - 1].addUpdateCallback(function () {
             component_listeners.forEach(function (listener) {
                 listener();
             });
         });
         if (fetching_status === "completed") {
-            stores[i].actions.set(combined_cfg);
+            stores[i - 1].actions.set(combined_cfg);
         }
     }
     WithConfigHOC.addStore = addStore;
