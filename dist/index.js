@@ -99,7 +99,7 @@ function initiateFetch() {
         throw err;
     });
 }
-function fetchCfg() {
+function getCfg() {
     return new Promise(function (resolve, reject) {
         if (fetching_status === 'completed') {
             resolve(combined_cfg);
@@ -118,11 +118,11 @@ function fetchCfg() {
             return;
         });
         if (fetching_status === 'not_initialized') {
-            initiateFetch();
+            resolve(initiateFetch());
         }
     });
 }
-function getCfg() {
+function getCurrentCfg() {
     if (fetching_status !== "completed") {
         console.warn("withConfig: getConfig was run before config finished fetching.\n        withConfig.fetch() returns a promise which resolves when fetch completes, you might want to use it instead.");
     }
@@ -199,14 +199,14 @@ exports.WithConfigHOC = WithConfigHOC;
         combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
     }
     WithConfigHOC.setDefault = setDefault;
-    function fetch() {
-        return fetchCfg();
-    }
-    WithConfigHOC.fetch = fetch;
-    function getConfig() {
+    function get() {
         return getCfg();
     }
-    WithConfigHOC.getConfig = getConfig;
+    WithConfigHOC.get = get;
+    function getCurrentConfig() {
+        return getCurrentCfg();
+    }
+    WithConfigHOC.getCurrentConfig = getCurrentConfig;
     function getDefault() {
         return default_cfg;
     }
