@@ -93,7 +93,7 @@ function initiateFetch(): Promise<any> {
     });
 }
 
-function fetchCfg(): Promise<any> {
+function getCfg(): Promise<any> {
     return new Promise((resolve, reject) => {
         if (fetching_status === 'completed') {
             resolve(combined_cfg);
@@ -112,12 +112,12 @@ function fetchCfg(): Promise<any> {
             return;
         });
         if (fetching_status === 'not_initialized') {
-            initiateFetch();
+            resolve(initiateFetch());
         }
     });
 }
 
-function getCfg(): any {
+function getCurrentCfg(): any {
     if (fetching_status !== "completed") {
         console.warn(`withConfig: getConfig was run before config finished fetching.
         withConfig.fetch() returns a promise which resolves when fetch completes, you might want to use it instead.`);
@@ -211,11 +211,11 @@ export namespace WithConfigHOC {
         default_cfg = default_config;
         combined_cfg = Object.assign({}, default_cfg, fetched_cfg);
     }
-    export function fetch() {
-        return fetchCfg();
-    }
-    export function getConfig() {
+    export function get() {
         return getCfg();
+    }
+    export function getCurrentConfig() {
+        return getCurrentCfg();
     }
     export function getDefault() {
         return default_cfg;
