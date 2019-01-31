@@ -118,7 +118,7 @@ function getCfg() {
             return;
         });
         if (fetching_status === 'not_initialized') {
-            resolve(initiateFetch());
+            initiateFetch();
         }
     });
 }
