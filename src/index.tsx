@@ -112,7 +112,7 @@ function getCfg(): Promise<any> {
             return;
         });
         if (fetching_status === 'not_initialized') {
-            resolve(initiateFetch());
+            initiateFetch();
         }
     });
 }
