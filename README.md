@@ -10,7 +10,8 @@ A spinner is optionally shown while the config is being fetched.
 [Setting default config](#setting-default-config)  
 [Error handling](#error-handling)  
 
-
+# NOTE
+Please note that the serving API (such as dev-server) MUST have a publically accessible file called `config.json` in root!
 
 # Quick guide
 Add `"with-config": "git+https://bitbucket.org/allbin/with-config.git#v`**`x.y.z`** to package.json. Where **x.y.z** is the version tagged.
