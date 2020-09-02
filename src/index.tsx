@@ -8,7 +8,7 @@ interface WithConfigProps {
   Context: React.Context<AnyConfig>;
 }
 
-export const WithConfig: React.FC<WithConfigProps> = ({
+const WithConfig: React.FC<WithConfigProps> = ({
   children,
   default_config,
   Context,
@@ -30,3 +30,5 @@ export const WithConfig: React.FC<WithConfigProps> = ({
 
   return null;
 };
+
+export default WithConfig;

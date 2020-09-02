@@ -1,139 +1,31 @@
-# withConfig
+# @allbin/with-config
 
-A repo for wrapping components with a withConfig HOC to ensure correct dynamic loading of config settings.
-A spinner is optionally shown while the config is being fetched.
+### Example
 
-### Index
-[Quick guide](#quick-guide)  
-[HOC Wrapping function](#wrapping-function)  
-[Utility functions](#utility-functions)  
-[Setting default config](#setting-default-config)  
-[Error handling](#error-handling)  
-
-# NOTE
-Please note that the serving API (such as dev-server) MUST have a publically accessible file called `config.json` in root!
-
-# Quick guide
-Add `"with-config": "git+https://bitbucket.org/allbin/with-config.git#v`**`x.y.z`** to package.json. Where **x.y.z** is the version tagged.
-
-Use `import withConfig from 'with-config'` in any file and wrap desired component in it to ensure dynamically loaded configs are available.
-
-### Example MyComponent.jsx component:
+src/config.ts:
 ```
-import React from 'react';
-import withConfig from 'with-config';
-
-class MyComponent extends React.Component {
-    ...
+interface ConfigType {
+  [...]
 }
 
-export default withConfig(MyComponent);
-```
-
-### Example inline component:
-```
-import React from 'react';
-import withConfig from 'with-config';
-import SomeComponent from './components/SomeComponent';
-
-let SomeComponentWithConfig = withConfig(SomeComponent);
-
-export default class MyComp extends React.Component {
-    ...
-
-    render() {
-        return (
-            <div>
-                <SomeComponentWithConfig/>
-            </div>
-        );
-    }
+export const default_config: ConfigType = {
+  [...]
 }
 
+const ConfigContext = React.createContext<ConfigType>(default_config);
+export default ConfigContext
 ```
 
-### Example with default config, initial fetch and store integration
+src/index.tsx:
 ```
-import React from 'react';
-import withConfig from 'with-config';
-import withState from 'with-state';
-import default_config from './default_config.js';
-import SomeComponent from './components/SomeComponent';
+import WithConfig from 'with-config';
+import ConfigContext, { default_config } from './config';
 
-withConfig.addStore(withState);
-withConfig.setDefault(default_config);
-withConfig.getConfig().then((config) => {
-    //Do something with config.
-    //Such as configure ErrorReporting URLs etc.
-}).catch((err) => {
-    //Fetch failed. The user will see the default error message
-    //or optional ErrorComponent.
-});
+[...]
 
-let SomeComponentWithConfig = withConfig(SomeComponent);
-
-export default class MyComp extends React.Component {
-    ...
-
-    render() {
-        return (
-            <SomeComponentWithConfig>
-                <ChildComponent />
-            </SomeComponentWithConfig>
-        );
-    }
-}
-
+ReactDOM.render(
+  <WithConfig context={ConfigContext} default_config={default_config}>
+    <...>
+  </WithConfig>
+)
 ```
-**NOTE:** ChildComponent will only show after fetch is complete.
-
-# Wrapping function
-The HOC wrapping function attaches the `config` prop to the component being wrapped.
-
-Example: `withConfig(YourComponent)` will give access to `this.props.config` inside *YourComponent*.
-
-### Optional parameters
-#### SpinnerComponent
-*withConfig(YourComponent, **`SpinnerComponent`**)*.  
-Optionally a second component can be supplied which will be shown while the config is being fetched. The spinner component, if supplied, also gets any props assigned to the wrapped component.
-
-#### ErrorComponent
-*withConfig(YourComponent, SpinnerComponent || null, **`ErrorComponent`**)*.  
-Optionally a third component can be supplied. It will be displayed when a fetch has failed due to network issues.  
-Defaults to showing the text "Oops, something went wrong." if no ErrorComponent is supplied.
-
-# Utility functions
-
-`withConfig.addStore(<store>)` - withConfig will call the supplied stores addState function with an object containing a reducer and actions for use with a redux store; *store.addState({ reducer: fn, actions: {...} })*.  
-The state will automatically populate with the configs either when they are finished fetching or immediately if the config is already fetched. Can be called multiple times.
-
-`withConfig.fetch()` - Returns a promise that resolves to the current config values, any default values merged with any fetched values.  
-If the fetch has not been initiated it will be by this call and it will resolve once finished. 
-
-`withConfig.getConfig()` - Returns the config values currently in withConfig, a warning is shown in console if this function is executed before fetching has finished. Sync version of *fetch()*.
-
-`withConfig.getDefault()` - Returns default config values. If none are set returns null.
-
-`withConfig.getFetched()` - Returns the fetched config values.
-
-`withConfig.setDefault(<object>)` - See [Setting default config](#setting-default-config).
-
-`withConfig.setFetchedCallback(<callback function>)` - If set this function will trigger when fetching settings from server has completed. The callbacks only parameter will be the final config object.
-
-`withConfig.setFetchErrorCallback(<callback function>)` - See [Error handling](#error-handling).
-
-
-
-
-# Setting default config
-Use `withConfig.setDefault(<object>)` to set the default config. Returns nothing.
-
-**NOTE:** Defaults will be overwritten by fetched config settings.  
-**NOTE:** Defaults can only be set before the first wrapped component has mounted.  
-**NOTE:** Defaults can only be set once.  
-
-
-# Error handling
-Use `withConfig.setFetchErrorCallback(<callback function>)` to assign a callback function which is called with the Exception object if fetching from the server fails.
-
-**NOTE:** If the fetch fails the optional [ErrorComponent](#error-component) will show.
