@@ -17,7 +17,7 @@ export const WithConfig: React.FC<WithConfigProps> = ({
 
   React.useEffect(() => {
     void axios
-      .get<AnyConfig>('', {})
+      .get<AnyConfig>('/config.json')
       .then((r) => setConfig({ ...default_config, ...r.data }))
       .catch((err) => {
         console.error(err);
