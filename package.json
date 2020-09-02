@@ -1,8 +1,9 @@
 {
     "name": "@allbin/with-config",
-    "version": "7.0.2",
+    "version": "7.0.3",
     "description": "",
     "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "scripts": {
         "clean": "rm -rf lib",
         "build": "rm -rf lib && tsc",
