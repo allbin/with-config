@@ -16,5 +16,6 @@ jobs:
           scope: '@allbin'
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }} >> .npmrc
       - run: npm ci
+      - run: npm run build
       - run: npm publish --access public
       - run: rm .npmrc
