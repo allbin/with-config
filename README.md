@@ -13,7 +13,7 @@ export const default_config: ConfigType = {
 }
 
 const ConfigContext = React.createContext<ConfigType>(default_config);
-export default ConfigContext
+export default ConfigContext;
 ```
 
 src/index.tsx:
@@ -28,4 +28,16 @@ ReactDOM.render(
     <...>
   </WithConfig>
 )
+```
+
+src/views/View.tsx:
+```
+import ConfigContext from '../config';
+
+
+const View = React.FC = () => {
+  const config = useContext(ConfigContext);
+
+  [...]
+}
 ```
