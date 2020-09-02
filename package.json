@@ -1,32 +1,44 @@
 {
-    "name": "with-config",
-    "version": "6.0.1",
+    "name": "@allbin/with-config",
+    "version": "7.0.0",
     "description": "",
-    "main": "dist/index.js",
+    "main": "lib/index.js",
     "scripts": {
-        "release:patch": "gulp4 release:patch",
-        "release:minor": "gulp4 release:minor",
-        "release:major": "gulp4 release:major",
-        "release:dev": "gulp4 release:dev",
-        "build": "gulp4 build",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "clean": "rm -rf lib",
+        "build": "rm -rf lib && tsc",
+        "lint": "eslint --ext .ts src",
+        "lint:fix": "eslint --ext .ts --fix src"
     },
     "author": "",
     "license": "ISC",
-    "dependencies": {
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/allbin/with-config.git"
+    },
+    "bugs": {
+        "url": "git+https://github.com/allbin/with-config/issues"
+    },
+    "homepage": {
+        "url": "git+https://github.com/allbin/with-config#readme"
+    },
+    "peerDependencies": {
         "axios": "0.*",
         "react": "16.*"
     },
     "devDependencies": {
+        "axios": "0.*",
+        "react": "16.*",
+        "@allbin/eslint-config-react": "0.0.9",
+        "@types/axios": "0.*",
         "@types/react": "16.*",
         "@types/react-dom": "16.*",
-        "gulp4": "4.0.2",
-        "gulp-allbin": "git+https://bitbucket.org/allbin/gulp-allbin.git#v0.2.2",
-        "gulp-typescript": "5.0.0-alpha.3",
-        "gulp-bump": "3.*",
-        "gulp-tslint": "8.*",
-        "typescript": "3.*",
-        "tslint": "5.*",
-        "tslint-eslint-rules": "5.*"
+        "@typescript-eslint/eslint-plugin": "^4.0.1",
+        "@typescript-eslint/parser": "^4.0.1",
+        "eslint": "^7.8.1",
+        "eslint-config-prettier": "^6.11.0",
+        "eslint-plugin-prettier": "^3.1.4",
+        "eslint-plugin-react-hooks": "^4.1.0",
+        "prettier": "^2.1.1",
+        "typescript": "^4.0.2"
     }
 }
