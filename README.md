@@ -18,7 +18,7 @@ export default ConfigContext;
 
 src/index.tsx:
 ```
-import WithConfig from 'with-config';
+import WithConfig from '@allbin/with-config';
 import ConfigContext, { default_config } from './config';
 
 [...]
