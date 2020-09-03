@@ -1,11 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 
-type AnyConfig = { [key: string]: any };
-
 interface WithConfigProps {
-  default_config: AnyConfig;
-  Context: React.Context<AnyConfig>;
+  default_config: any;
+  Context: React.Context<any>;
 }
 
 const WithConfig: React.FC<WithConfigProps> = ({
@@ -13,11 +11,11 @@ const WithConfig: React.FC<WithConfigProps> = ({
   default_config,
   Context,
 }) => {
-  const [config, setConfig] = React.useState<AnyConfig>({});
+  const [config, setConfig] = React.useState<any>({});
 
   React.useEffect(() => {
     void axios
-      .get<AnyConfig>('/config.json')
+      .get<any>('/config.json')
       .then((r) => setConfig({ ...default_config, ...r.data }))
       .catch((err) => {
         console.error(err);

@@ -24,7 +24,7 @@ import ConfigContext, { default_config } from './config';
 [...]
 
 ReactDOM.render(
-  <WithConfig context={ConfigContext} default_config={default_config}>
+  <WithConfig Context={ConfigContext} default_config={default_config}>
     <...>
   </WithConfig>
 )
