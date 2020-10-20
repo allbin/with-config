@@ -16,9 +16,19 @@ const WithConfig: React.FC<WithConfigProps> = ({
   React.useEffect(() => {
     void axios
       .get<any>('/config.json')
-      .then((r) => setConfig({ ...default_config, ...r.data }))
+      .then(({ data }) => {
+        if (
+          !data ||
+          typeof data !== 'object' ||
+          Array.isArray(data) ||
+          data === null
+        ) {
+          throw new Error('WithConfig: Malformed config detected.');
+        }
+        setConfig({ ...default_config, ...data });
+      })
       .catch((err) => {
-        console.error(err);
+        throw err;
       });
   }, [default_config]);
 
