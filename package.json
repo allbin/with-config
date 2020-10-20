@@ -1,45 +1,45 @@
 {
-    "name": "@allbin/with-config",
-    "version": "7.0.4",
-    "description": "",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
-    "scripts": {
-        "clean": "rm -rf lib",
-        "build": "rm -rf lib && tsc",
-        "lint": "eslint --ext .ts src",
-        "lint:fix": "eslint --ext .ts --fix src"
-    },
-    "author": "",
-    "license": "ISC",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/allbin/with-config.git"
-    },
-    "bugs": {
-        "url": "git+https://github.com/allbin/with-config/issues"
-    },
-    "homepage": {
-        "url": "git+https://github.com/allbin/with-config#readme"
-    },
-    "peerDependencies": {
-        "axios": "0.*",
-        "react": "16.*"
-    },
-    "devDependencies": {
-        "axios": "0.*",
-        "react": "16.*",
-        "@allbin/eslint-config-react": "0.0.9",
-        "@types/axios": "0.*",
-        "@types/react": "16.*",
-        "@types/react-dom": "16.*",
-        "@typescript-eslint/eslint-plugin": "^4.0.1",
-        "@typescript-eslint/parser": "^4.0.1",
-        "eslint": "^7.8.1",
-        "eslint-config-prettier": "^6.11.0",
-        "eslint-plugin-prettier": "^3.1.4",
-        "eslint-plugin-react-hooks": "^4.1.0",
-        "prettier": "^2.1.1",
-        "typescript": "^4.0.2"
-    }
+  "name": "@allbin/with-config",
+  "version": "7.0.5",
+  "description": "",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "rm -rf lib && tsc",
+    "lint": "eslint --ext .ts src",
+    "lint:fix": "eslint --ext .ts --fix src"
+  },
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allbin/with-config.git"
+  },
+  "bugs": {
+    "url": "git+https://github.com/allbin/with-config/issues"
+  },
+  "homepage": {
+    "url": "git+https://github.com/allbin/with-config#readme"
+  },
+  "peerDependencies": {
+    "axios": "0.*",
+    "react": "16.*"
+  },
+  "devDependencies": {
+    "axios": "0.*",
+    "react": "16.*",
+    "@allbin/eslint-config-react": "0.0.9",
+    "@types/axios": "0.*",
+    "@types/react": "16.*",
+    "@types/react-dom": "16.*",
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
+    "@typescript-eslint/parser": "^4.0.1",
+    "eslint": "^7.8.1",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react-hooks": "^4.1.0",
+    "prettier": "^2.1.1",
+    "typescript": "^4.0.2"
+  }
 }
