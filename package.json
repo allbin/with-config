@@ -1,6 +1,6 @@
 {
   "name": "@allbin/with-config",
-  "version": "7.0.6",
+  "version": "7.0.7",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +24,7 @@
   },
   "peerDependencies": {
     "axios": "0.*",
-    "react": "16.*"
+    "react": "16.* || 17.*"
   },
   "devDependencies": {
     "axios": "0.*",
