@@ -1,6 +1,6 @@
 {
   "name": "@allbin/with-config",
-  "version": "7.0.7",
+  "version": "7.0.8",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -19,12 +19,9 @@
   "bugs": {
     "url": "git+https://github.com/allbin/with-config/issues"
   },
-  "homepage": {
-    "url": "git+https://github.com/allbin/with-config#readme"
-  },
   "peerDependencies": {
-    "axios": "0.*",
-    "react": "16.* || 17.*"
+    "axios": "0.* || 1.*",
+    "react": "16.* || 17.* || 18.*"
   },
   "devDependencies": {
     "axios": "0.*",
