@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import axios from 'axios';
 
 interface WithConfigProps {
@@ -6,7 +6,7 @@ interface WithConfigProps {
   Context: React.Context<any>;
 }
 
-const WithConfig: React.FC<WithConfigProps> = ({
+const WithConfig: React.FC<PropsWithChildren<WithConfigProps>> = ({
   children,
   default_config,
   Context,
